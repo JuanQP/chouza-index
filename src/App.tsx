@@ -108,6 +108,7 @@ class App extends React.Component<any, IAppState> {
         <Row className="text-center">
           <Col>
             <h1>Índice Chouza</h1>
+            <p><em>(o simplemente un Plazo fijo vs. Dólar)</em></p>
           </Col>
         </Row>
         <Row>
