@@ -1,0 +1,25 @@
+{
+  "files": {
+    "main.css": "/chouza-index/static/css/main.5f361e03.chunk.css",
+    "main.js": "/chouza-index/static/js/main.b7557015.chunk.js",
+    "main.js.map": "/chouza-index/static/js/main.b7557015.chunk.js.map",
+    "runtime-main.js": "/chouza-index/static/js/runtime-main.4ba1094e.js",
+    "runtime-main.js.map": "/chouza-index/static/js/runtime-main.4ba1094e.js.map",
+    "static/css/2.af3c1da9.chunk.css": "/chouza-index/static/css/2.af3c1da9.chunk.css",
+    "static/js/2.5ecb4b15.chunk.js": "/chouza-index/static/js/2.5ecb4b15.chunk.js",
+    "static/js/2.5ecb4b15.chunk.js.map": "/chouza-index/static/js/2.5ecb4b15.chunk.js.map",
+    "index.html": "/chouza-index/index.html",
+    "precache-manifest.422025a67889c16c14e43d212141e0d3.js": "/chouza-index/precache-manifest.422025a67889c16c14e43d212141e0d3.js",
+    "service-worker.js": "/chouza-index/service-worker.js",
+    "static/css/2.af3c1da9.chunk.css.map": "/chouza-index/static/css/2.af3c1da9.chunk.css.map",
+    "static/css/main.5f361e03.chunk.css.map": "/chouza-index/static/css/main.5f361e03.chunk.css.map",
+    "static/js/2.5ecb4b15.chunk.js.LICENSE.txt": "/chouza-index/static/js/2.5ecb4b15.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.4ba1094e.js",
+    "static/css/2.af3c1da9.chunk.css",
+    "static/js/2.5ecb4b15.chunk.js",
+    "static/css/main.5f361e03.chunk.css",
+    "static/js/main.b7557015.chunk.js"
+  ]
+}
