@@ -3,7 +3,7 @@ import './App.css';
 import * as $ from "jquery";
 import moment from "moment";
 import {Chart} from "chart.js";
-import { Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Button, Badge } from "reactstrap";
+import { Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, Button, Badge, Card, CardTitle, CardText, Toast, ToastHeader, ToastBody } from "reactstrap";
 import { threadId } from 'worker_threads';
 
 /**
@@ -19,6 +19,7 @@ const tasasPlazoFijo = [
 interface IAppState extends React.ClassAttributes<App> {
   modalAbout: boolean;
   modalDatos: boolean;
+  registros: any[];
 };
 
 class App extends React.Component<any, IAppState> {
@@ -28,6 +29,7 @@ class App extends React.Component<any, IAppState> {
     this.state = {
       modalAbout: false,
       modalDatos: false,
+      registros: [],
     }
     this.toggleAboutModal = this.toggleAboutModal.bind(this);
     this.toggleDatosModal = this.toggleDatosModal.bind(this);
@@ -58,6 +60,7 @@ class App extends React.Component<any, IAppState> {
           fecha: moment(registro[0], "DD-MM-YYYY"),
           cierre: Number(registro[1]),
           ahorro: Number(registro[1]),
+          indice: Number(100),
         };
       })
       .filter((registro) => registro.fecha.isAfter(chouzaIndexInicio));
@@ -70,6 +73,11 @@ class App extends React.Component<any, IAppState> {
         }
 
         a[i].ahorro = a[i-1].ahorro * (1 + tasa);
+        a[i].indice = Math.round(100 * (100 * (a[i].ahorro / a[i].cierre))) / 100;
+      });
+
+      this.setState({
+        registros,
       });
 
       const chart = new Chart('myChart', {
@@ -80,7 +88,8 @@ class App extends React.Component<any, IAppState> {
             backgroundColor: "rgba(255,0,0,0.25)",
             borderColor: "red",
             label: 'Chouza Index',
-            data: registros.map((r) => Math.round(100 * (100 * (r.ahorro / r.cierre))) / 100),
+            data: registros.map((r) => r.indice),
+            fill: 'start',
           },
           {
             backgroundColor: "rgba(0,0,0,0)",
@@ -103,6 +112,8 @@ class App extends React.Component<any, IAppState> {
 
   public render() {
     const {modalAbout, modalDatos} = this.state;
+    const indiceHoy = this.state.registros.length === 0 ? 0 : this.state.registros[this.state.registros.length - 1].indice;
+    const frenteDolar = this.state.registros.length === 0 ? 0 : Math.round(100 * (indiceHoy - 100)) / 100;
     return (
       <Container>
         <Row className="text-center">
@@ -111,9 +122,31 @@ class App extends React.Component<any, IAppState> {
             <p><em>(o simplemente un Plazo fijo vs. Dólar)</em></p>
           </Col>
         </Row>
+        <Row className="text-center">
+          <Col className="col-md-6 d-flex justify-content-center">
+            <Toast>
+              <ToastHeader>
+                Índice hoy
+              </ToastHeader>
+              <ToastBody className={"text-monospace text-primary"}>
+                {indiceHoy}
+              </ToastBody>
+            </Toast>
+          </Col>
+          <Col className="col-md-6 d-flex justify-content-center">
+            <Toast>
+              <ToastHeader>
+                Ahorro vs dólar
+              </ToastHeader>
+              <ToastBody className={"text-monospace " + (frenteDolar < 0 ? "text-danger" : "text-success")}>
+                {frenteDolar}{"%"}
+              </ToastBody>
+            </Toast>
+          </Col>
+        </Row>
         <Row>
-          <Col>
-            <canvas id="myChart" width="400" height="200"></canvas>
+          <Col className="col-md-12">
+            <canvas id="myChart" width="100" height="60"></canvas>
           </Col>
         </Row>
         <Row>
