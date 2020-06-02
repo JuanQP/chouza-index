@@ -13,7 +13,8 @@ const chouzaIndexInicio = moment("01-05-2020", "DD-MM-YYYY").startOf('day');
 
 const tasasPlazoFijo = [
   26.6, // Correspondiente al 02-05-2020
-  26.6, // Correspondiente al 02-06-2020 (se va a actualizar)
+  30.02, // Correspondiente al 02-06-2020
+  30.02, // Correspondiente al 02-07-2020 (se va a actualizar)
 ]
 
 interface IAppState extends React.ClassAttributes<App> {
