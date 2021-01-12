@@ -17,9 +17,12 @@ const tasasPlazoFijo = [
   30.02, // Correspondiente al 02-07-2020
   33.06, // Correspondiente al 02-08-2020
   33.06, // Correspondiente al 02-09-2020
-  33.06, // Correspondiente al 02-10-2020
-  33.06, // Correspondiente al 02-11-2020
-  33.06, // Correspondiente al 02-12-2020
+  34.00, // Correspondiente al 02-10-2020
+  34.00, // Correspondiente al 02-11-2020
+  37.00, // Correspondiente al 02-12-2020
+  37.00, // Correspondiente al 02-01-2021
+  37.00, // Correspondiente al 02-02-2021
+  37.00, // Correspondiente al 02-03-2021
 ]
 
 interface IAppState extends React.ClassAttributes<App> {
@@ -53,9 +56,9 @@ class App extends React.Component<any, IAppState> {
     })
   }
 
-  tasaCorrespondiente(dias: number) {
-    const tasaCorrespondiente = Math.floor(dias/30);
-    return ((tasasPlazoFijo[tasaCorrespondiente] / 365) / 100);
+  tasaMensual(meses: number) {
+    const indiceTasa = meses - 1;
+    return ((tasasPlazoFijo[indiceTasa] / 12) / 100);
   }
 
   componentDidMount() {
@@ -69,19 +72,24 @@ class App extends React.Component<any, IAppState> {
           indice: Number(100),
         };
       })
-      .filter((registro) => registro.fecha.isAfter(chouzaIndexInicio));
-
+      .filter((registro) => registro.fecha.isAfter(chouzaIndexInicio) && (registro.fecha.date() === 2 || registro.fecha.diff(moment(), "days") === 0));
       registros.forEach((r, i, a) => {
-        const tasa = this.tasaCorrespondiente(i);
+        let tasa = this.tasaMensual(i);
         if(i === 0) {
           a[i].ahorro = a[i].cierre;
+          a[i].indice = a[i].ahorro / a[i].cierre * 100;
           return;
+        }
+        // Cuando esta en "Hoy"
+        if(i === a.length - 1) {
+          const diasDesdeElPF = moment().diff(a[i-1].fecha, "days");
+          tasa = this.tasaMensual(i) / 30 * diasDesdeElPF;
         }
 
         a[i].ahorro = a[i-1].ahorro * (1 + tasa);
-        a[i].indice = Math.round(100 * (100 * (a[i].ahorro / a[i].cierre))) / 100;
+        a[i].indice = parseFloat((100 * (a[i].ahorro / a[i].cierre)).toFixed(2));
       });
-
+      console.log(registros);
       this.setState({
         registros,
       });
@@ -89,13 +97,14 @@ class App extends React.Component<any, IAppState> {
       const chart = new Chart('myChart', {
         type: 'line',
         data: {
-          labels: registros.map((r) => r.fecha.format("DD-MM-YYYY")),
+          labels: registros.map((r, i, a) => i === a.length - 1? r.fecha.format("DD-MM-YYYY") + " (Hoy)" : r.fecha.format("DD-MM-YYYY")),
           datasets: [{
             backgroundColor: "rgba(255,0,0,0.25)",
             borderColor: "red",
             label: 'Chouza Index',
             data: registros.map((r) => r.indice),
             fill: 'start',
+            lineTension: 0.4
           },
           {
             backgroundColor: "rgba(0,0,0,0)",
@@ -108,7 +117,7 @@ class App extends React.Component<any, IAppState> {
             backgroundColor: "rgba(0,0,0,0)",
             borderColor: "green",
             label: 'Precio Dólar MEP',
-            data: registros.map((r) => Math.round(100 * r.cierre) / 100),
+            data: registros.map((r) => r.cierre),
             hidden: true,
           }]
         }
@@ -174,7 +183,7 @@ class App extends React.Component<any, IAppState> {
         <Modal size="lg" isOpen={modalDatos} toggle={this.toggleDatosModal}>
           <ModalHeader toggle={this.toggleDatosModal}>¿Qué significa este índice?</ModalHeader>
           <ModalBody>
-            <p>El índice lo que hacer es comparar un ahorro en pesos y ver su evolución diaria al haber hecho un plazo fijo, y eso compararlo con el mismo ahorro pero si hubiese comprado dólar MEP.</p>
+            <p>El índice lo que hacer es comparar un ahorro en pesos y ver su evolución mensual al haber hecho un plazo fijo, y eso compararlo con el mismo ahorro pero si hubiese comprado dólar MEP.</p>
             <p>Si <Badge color="secondary">Índice Chouza=100</Badge> significa que hubiese sido lo mismo hacer un plazo fijo que haber comprado dólares.</p>
             <p>Si <Badge color="success">Índice Chouza{">"}100</Badge>, significa que el ahorro en pesos creció más que si se hubiese dolarizado</p>
             <p>Si <Badge color="danger">Índice Chouza{"<"}100</Badge>, significa que ese ahorro en plazo fijo fue un error, ya que hubiese sido mejor comprar dólar MEP.</p>
